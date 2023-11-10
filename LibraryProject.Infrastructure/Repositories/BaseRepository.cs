@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LibraryProject.Infrastructure.Repositories
 {
-    public class BaseRepository<T> : IBaseRepository<T>
+    public abstract class BaseRepository<T> : IBaseRepository<T>
         where T : BaseEntity
     {
         protected LibraryDbContext _context;

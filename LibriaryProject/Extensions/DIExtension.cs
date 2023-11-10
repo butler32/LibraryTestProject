@@ -17,7 +17,6 @@ namespace LibraryProject.API.Extensions
             
             services.AddScoped<IBookService, BookService>();
             services.AddScoped(typeof(IBookRepository<>), typeof(BookRepository<>));
-            services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IDataBaseSeeder, DataBaseSeeder>();
