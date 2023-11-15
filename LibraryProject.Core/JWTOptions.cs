@@ -1,6 +1,6 @@
 ﻿namespace LibraryProject.Application
 {
-    public  class JWTOptions
+    public class JWTOptions
     {
         public string Secret { get; set; }
         public string Issuer { get; set; }

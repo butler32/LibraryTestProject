@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using LibraryProject.Domain.Enums;
+using Microsoft.AspNetCore.Identity;
 
 namespace LibraryProject.API.Extensions
 {
@@ -13,8 +14,8 @@ namespace LibraryProject.API.Extensions
                 try
                 {
                     var roleManager = services.GetRequiredService<RoleManager<IdentityRole<int>>>();
+                    var roles = new List<string> { RolesEnum.UserRole.ToString(), RolesEnum.AdminRole.ToString() };
 
-                    var roles = new List<string> { "UserRole", "AdminRole" };
                     foreach (var role in roles)
                     {
                         if (!await roleManager.RoleExistsAsync(role))

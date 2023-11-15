@@ -14,29 +14,32 @@ namespace LibraryProject.Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task<T> Add(T entity)
+        public async Task<T> AddAsync(T entity, CancellationToken cancellationToken)
         {
-            await _context.Set<T>().AddAsync(entity);
-            await _context.SaveChangesAsync();
+            await _context.Set<T>().AddAsync(entity, cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
+
             return entity;
         }
 
-        public async Task<bool> Delete(T entity)
+        public async Task<bool> DeleteAsync(T entity, CancellationToken cancellationToken)
         {
             _context.Remove(entity);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cancellationToken);
+
             return true;
         }
 
-        public async Task<T?> Get(int id)
+        public T? Get(int id)
         {
             return _context.Set<T>().AsNoTracking().FirstOrDefault(i => i.Id == id);
         }
 
-        public async Task<bool> Update(T entity)
+        public async Task<bool> UpdateAsync(T entity, CancellationToken cancellationToken)
         {
             _context.Update(entity);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cancellationToken);
+
             return true;
         }
     }

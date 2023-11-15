@@ -20,6 +20,7 @@ namespace LibraryProject.API.Extensions
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IDataBaseSeeder, DataBaseSeeder>();
+            services.AddScoped<IBookDtoConvertService, BookDtoConverService>();
 
             services.AddScoped<UserManager<IdentityUser<int>>>();
             services.AddScoped<SignInManager<IdentityUser<int>>>();

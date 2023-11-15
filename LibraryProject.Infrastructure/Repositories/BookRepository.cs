@@ -12,12 +12,12 @@ namespace LibraryProject.Infrastructure.Repositories
         }
 
 
-        public async Task<List<T>> GetAll()
+        public List<T> GetAll()
         {
             return _context.Set<T>().AsNoTracking().ToList();
         }
 
-        public async Task<T?> GetByISBN(string isbn)
+        public T? GetByISBN(string isbn)
         {
             return _context.Set<T>().AsNoTracking().FirstOrDefault(i => i.ISBN == isbn);
         }

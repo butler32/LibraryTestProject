@@ -1,6 +1,8 @@
 ﻿using LibraryProject.Application.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using LibraryProject.Domain.Exceptions;
+using LibraryProject.Domain.Enums;
+using LibraryProject.Application.Dto;
 
 namespace LibraryProject.Application.Services
 {
@@ -18,16 +20,16 @@ namespace LibraryProject.Application.Services
 
         }
 
-        public async Task<string?> LoginAsync(string username, string password)
+        public async Task<string?> LoginAsync(LoginDto loginDto, CancellationToken cancellationToken)
         {
-            var user = await _userManager.FindByNameAsync(username);
+            var user = await _userManager.FindByNameAsync(loginDto.Username);
 
             if (user == null)
             {
                 throw new NoSuchUserException("Invalid username");
             }
 
-            if (await _userManager.CheckPasswordAsync(user, password))
+            if (await _userManager.CheckPasswordAsync(user, loginDto.Password))
             {
                 await _signInManager.SignInAsync(user, isPersistent: false);
                 var roles = await _userManager.GetRolesAsync(user);
@@ -36,20 +38,22 @@ namespace LibraryProject.Application.Services
                 return token;
             }
 
-            throw new InvalidOperationException();
+            throw new InvalidOperationException("Invalid password");
         }
 
-        public async Task<IdentityResult> RegisterAsync(string username, string password)
+        public async Task RegisterAsync(RegistrationDto registrationDto, CancellationToken cancellationToken)
         {
-            var user = new IdentityUser<int> { UserName = username };
-            var result = await _userManager.CreateAsync(user, password);
+            var user = new IdentityUser<int> { UserName = registrationDto.Username };
+            var result = await _userManager.CreateAsync(user, registrationDto.Password);
 
             if (result.Succeeded)
             {
-                await _userManager.AddToRoleAsync(user, "UserRole");
+                await _userManager.AddToRoleAsync(user, RolesEnum.UserRole.ToString());
             }
-
-            return result;
+            else
+            {
+                throw new InvalidOperationException(string.Join(Environment.NewLine, result.Errors.Select(e => e.Description)));
+            }
         }
     }
 }

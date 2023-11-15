@@ -1,4 +1,5 @@
-﻿using LibraryProject.Application.Interfaces;
+﻿using LibraryProject.Application.Dto;
+using LibraryProject.Application.Interfaces;
 using LibraryProject.Domain.Entities;
 using LibraryProject.Domain.Exceptions;
 using LibraryProject.Domain.Interfaces;
@@ -7,34 +8,33 @@ namespace LibraryProject.Application.Services
 {
     public class BookService : IBookService
     {
-        private IBookRepository<Book> _bookRepository;
+        private readonly IBookRepository<Book> _bookRepository;
+        private readonly IBookDtoConvertService _bookDtoConvertService;
 
-        public BookService(IBookRepository<Book> bookRepository)
+        public BookService(IBookRepository<Book> bookRepository, IBookDtoConvertService bookDtoConvertService)
         {
             _bookRepository = bookRepository;
+            _bookDtoConvertService = bookDtoConvertService;
         }
 
-        public async Task<Book?> AddBook(Book book)
+        public async Task<Book?> AddBookAsync(BookForAddingDto book, CancellationToken cancellationToken)
         {
-            if (await _bookRepository.Get(book.Id) == null)
-            {
-                return await _bookRepository.Add(book);
-            }
-            throw new EntityAlreadyExistsException("Book with this id already exist");
+            return await _bookRepository.AddAsync(_bookDtoConvertService.DtoToBook(book), cancellationToken);
         }
 
-        public async Task<bool> DeleteBook(Book book)
+        public async Task<bool> DeleteBookAsync(BookDto book, CancellationToken cancellationToken)
         {
-            if (await _bookRepository.Get(book.Id) != null)
+            if (_bookRepository.Get(book.Id) != null)
             {
-                return await _bookRepository.Delete(book);
+                return await _bookRepository.DeleteAsync(_bookDtoConvertService.DtoToBook(book), cancellationToken);
             }
+
             throw new EntityNotFoundException("Cannot found book to delete");
         }
 
-        public async Task<bool> UpdateBook(Book book)
+        public async Task<bool> UpdateBookAsync(BookDto book, CancellationToken cancellationToken)
         {
-            var existingBook = await _bookRepository.Get(book.Id);
+            var existingBook = _bookRepository.Get(book.Id);
 
             if (existingBook == null)
             {
@@ -48,39 +48,42 @@ namespace LibraryProject.Application.Services
 
             if (existingBook != null)
             {
-                return await _bookRepository.Update(book);
+                return await _bookRepository.UpdateAsync(_bookDtoConvertService.DtoToBook(book), cancellationToken);
             }
 
             throw new InvalidOperationException();
         }
 
-        public async Task<Book?> GetBookById(int id)
+        public Book? GetBookById(int id)
         {
-            var book = await _bookRepository.Get(id);
+            var book = _bookRepository.Get(id);
             if (book == null)
             {
                 throw new EntityNotFoundException($"Cannot find book with {id} id");
             }
+
             return book;
         }
 
-        public async Task<Book?> GetBookByISBN(string ISBN)
+        public Book? GetBookByISBN(string ISBN)
         {
-            var book = await _bookRepository.GetByISBN(ISBN);
+            var book = _bookRepository.GetByISBN(ISBN);
             if (book == null)
             {
                 throw new EntityNotFoundException($"Cannot find book with {ISBN} ISBN");
             }
+
             return book;
         }
 
-        public async Task<List<Book>> GetBooks()
+        public List<Book> GetBooks()
         {
-            var books = await _bookRepository.GetAll();
+            var books = _bookRepository.GetAll();
             if (books == null)
             {
                 throw new EntityNotFoundException("Library is empty");
             }
+
             return books;
         }
     }
