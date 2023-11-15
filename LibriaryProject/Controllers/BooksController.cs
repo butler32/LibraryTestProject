@@ -1,5 +1,7 @@
-﻿using LibraryProject.Application.Interfaces;
+﻿using LibraryProject.Application.Dto;
+using LibraryProject.Application.Interfaces;
 using LibraryProject.Domain.Entities;
+using LibraryProject.Domain.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,7 +12,7 @@ namespace LibraryProject.API.Controllers
     [ApiController]
     public class BooksController : ControllerBase
     {
-        private IBookService _bookService;
+        private readonly IBookService _bookService;
 
         public BooksController(IBookService bookService)
         {
@@ -18,49 +20,55 @@ namespace LibraryProject.API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Book>>> GetAll()
+        public ActionResult<IEnumerable<Book>> GetAll()
         {
-            var books = await _bookService.GetBooks();
+            var books = _bookService.GetBooks();
+
             return Ok(books);
         }
 
-        [Authorize(Roles = "UserRole")]
+        [Authorize(Roles = nameof(RolesEnum.UserRole))]
         [HttpGet("{id}")]
-        public async Task<ActionResult<Book>> GetById(int id)
+        public ActionResult<Book> GetById(int id)
         {
-            var book = await _bookService.GetBookById(id);
+            var book = _bookService.GetBookById(id);
+
             return Ok(book);
         }
 
-        [Authorize(Roles = "UserRole")]
+        [Authorize(Roles = nameof(RolesEnum.UserRole))]
         [HttpPost]
-        public async Task<ActionResult> AddBook([FromBody] Book book)
+        public async Task<ActionResult> AddBookAsync([FromBody] BookForAddingDto book, CancellationToken cancellationToken)
         {
-            await _bookService.AddBook(book);
+            await _bookService.AddBookAsync(book, cancellationToken);
+
             return Ok();
         }
 
-        [Authorize(Roles = "UserRole")]
+        [Authorize(Roles = nameof(RolesEnum.UserRole))]
         [HttpGet("isbn/{isbn}")]
-        public async Task<ActionResult<Book>> GetByISBN([FromRoute]string isbn)
+        public ActionResult<Book> GetByISBN([FromRoute]string isbn)
         {
-            var book = await _bookService.GetBookByISBN(isbn);
+            var book = _bookService.GetBookByISBN(isbn);
+
             return Ok(book);
         }
 
-        [Authorize(Roles = "AdminRole")]
+        [Authorize(Roles = nameof(RolesEnum.AdminRole))]
         [HttpPut]
-        public async Task<ActionResult> Edit([FromBody] Book book)
+        public async Task<ActionResult> EditAsync([FromBody] BookDto book, CancellationToken cancellationToken)
         {
-            await _bookService.UpdateBook(book);
+            await _bookService.UpdateBookAsync(book, cancellationToken);
+
             return Ok();
         }
 
-        [Authorize(Roles = "AdminRole")]
+        [Authorize(Roles = nameof(RolesEnum.AdminRole))]
         [HttpDelete]
-        public async Task<ActionResult> Delete([FromBody] Book book)
+        public async Task<ActionResult> DeleteAsync([FromBody] BookDto book, CancellationToken cancellationToken)
         {
-            await _bookService.DeleteBook(book);
+            await _bookService.DeleteBookAsync(book, cancellationToken);
+
             return Ok();
         }
     }

@@ -1,14 +1,15 @@
-﻿using LibraryProject.Domain.Entities;
+﻿using LibraryProject.Application.Dto;
+using LibraryProject.Domain.Entities;
 
 namespace LibraryProject.Application.Interfaces
 {
     public interface IBookService
     {
-        Task<Book?> AddBook(Book book);
-        Task<List<Book>> GetBooks();
-        Task<Book?> GetBookById(int id);
-        Task<Book?> GetBookByISBN(string  ISBN);
-        Task<bool> DeleteBook(Book book);
-        Task<bool> UpdateBook(Book book);
+        Task<Book?> AddBookAsync(BookForAddingDto book, CancellationToken cancellationToken);
+        List<Book> GetBooks();
+        Book? GetBookById(int id);
+        Book? GetBookByISBN(string  ISBN);
+        Task<bool> DeleteBookAsync(BookDto book, CancellationToken cancellationToken);
+        Task<bool> UpdateBookAsync(BookDto book, CancellationToken cancellationToken);
     }
 }

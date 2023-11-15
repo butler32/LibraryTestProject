@@ -1,4 +1,5 @@
 ﻿using LibraryProject.Domain.Entities;
+using LibraryProject.Domain.Enums;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 
@@ -52,10 +53,9 @@ namespace LibraryProject.Infrastructure
 
                 var user = new IdentityUser<int> { UserName = "admin" };
                 var result = await _userManager.CreateAsync(user, "A123a_");
-                await _userManager.AddToRoleAsync(user, "AdminRole");
-                await _userManager.AddToRoleAsync(user, "UserRole");
+                await _userManager.AddToRoleAsync(user, RolesEnum.AdminRole.ToString());
+                await _userManager.AddToRoleAsync(user, RolesEnum.UserRole.ToString());
                 
-
                 await _context.SaveChangesAsync();
             }
         }

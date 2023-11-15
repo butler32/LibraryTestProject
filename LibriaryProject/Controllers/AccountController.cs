@@ -1,4 +1,4 @@
-﻿using LibraryProject.API.Models;
+﻿using LibraryProject.Application.Dto;
 using LibraryProject.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,29 +16,19 @@ namespace LibraryProject.API.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] AccountModel model)
+        public async Task<IActionResult> RegisterAsync([FromBody] RegistrationDto registrationDto, CancellationToken cancellationToken)
         {
-            var result = await _accountService.RegisterAsync(model.Username, model.Password);
+            await _accountService.RegisterAsync(registrationDto, cancellationToken);
 
-            if (result.Succeeded)
-            {
-                return Ok(new { Success = "Success!" });
-            }
-
-            return BadRequest(result.Errors);
+            return Ok(new { Success = "Success!" });
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] AccountModel model)
+        public async Task<IActionResult> LoginAsync([FromBody] LoginDto loginDto, CancellationToken cancellationToken)
         {
-            var result = await _accountService.LoginAsync(model.Username, model.Password);
+            var result = await _accountService.LoginAsync(loginDto, cancellationToken);
 
-            if (result != null)
-            {
-                return Ok(new { Token = result });
-            }
-
-            return BadRequest(new { Message = "Invalid username or password" });
+            return Ok(new { Token = result });
         }
     }
 }
